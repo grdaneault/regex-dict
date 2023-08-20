@@ -1,7 +1,11 @@
 import {List} from "immutable";
 
-export interface RegexState {
+export interface FilterState {
     id: number
-    regex: RegExp | null
+    filterFunc: FilterFunc
     remainingWords: List<string>
 }
+
+export type FilterFunc = (val: string) => boolean
+
+export const DEFAULT_FILTER: FilterFunc = (_: string) => true

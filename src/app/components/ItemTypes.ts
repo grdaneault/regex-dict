@@ -1,3 +1,3 @@
 export const ItemTypes = {
-    REGEX: 'regex',
+    FILTER: 'filter',
 }

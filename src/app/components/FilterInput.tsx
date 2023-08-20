@@ -3,6 +3,7 @@ import React, {memo, useMemo, useRef, useState} from 'react'
 import {useDrag, useDrop} from 'react-dnd'
 import {ItemTypes} from "@/app/components/ItemTypes";
 import {MdDragIndicator, MdRemoveCircle} from 'react-icons/md'
+import {FilterFunc} from "@/app/data/model";
 
 const handleStyle: CSSProperties = {
     display: 'inline-block',
@@ -10,22 +11,23 @@ const handleStyle: CSSProperties = {
     cursor: 'move',
 }
 
-export interface RegexInputProps {
+export interface FilterInputProps {
     id: number
-    moveRegex: (draggedIndex: number, afterIndex: number) => void
-    setRegex: (regex: RegExp) => void
-    removeRegex: () => void
+    moveFilter: (draggedIndex: number, afterIndex: number) => void
+    setFilter: (filter: FilterFunc) => void
+    removeFilter: () => void
     showRemoveButton: boolean
 }
 
-export const RegexInput: FC<RegexInputProps> = memo(function RegexInput({id, moveRegex, setRegex, removeRegex, showRemoveButton}) {
+export const FilterInput: FC<FilterInputProps> = memo(function RegexInput({id, moveFilter, setFilter, removeFilter, showRemoveButton}) {
     const dragRef = useRef(null)
     const dropRef = useRef(null)
+    const [invert, setInvert] = useState(false);
     const [regexStr, setRegexStr] = useState("");
     const [error, setError] = useState<string>("");
 
     const [{isDragging, handlerId}, connectDrag] = useDrag({
-        type: ItemTypes.REGEX,
+        type: ItemTypes.FILTER,
         item: {id},
         collect: (monitor) => {
             return {
@@ -36,23 +38,36 @@ export const RegexInput: FC<RegexInputProps> = memo(function RegexInput({id, mov
     })
 
     const [, connectDrop] = useDrop({
-        accept: ItemTypes.REGEX,
+        accept: ItemTypes.FILTER,
         hover({id: draggedId}: { id: number; type: string }) {
             if (draggedId !== id) {
-                moveRegex(draggedId, id)
+                moveFilter(draggedId, id)
             }
         },
     })
 
+    const makeFilter = (newRegex: string, newInvert: boolean): FilterFunc => {
+        const regex = new RegExp(newRegex)
+        if (newInvert) {
+            return (val: string) => !regex.test(val)
+        } else {
+            return (val: string) => regex.test(val)
+        }
+    }
     const handleRegexChange = (newRegex: string) => {
         setRegexStr(newRegex)
         try {
-            setRegex(new RegExp(newRegex))
+            setFilter(makeFilter(newRegex, invert))
             setError("");
         } catch (ex) {
             const error = (ex as SyntaxError).message;
             setError(error)
         }
+    }
+
+    const handleInvertChange = (newInvert: boolean) => {
+        setInvert(newInvert);
+        setFilter(makeFilter(regexStr, newInvert))
     }
 
 
@@ -63,10 +78,16 @@ export const RegexInput: FC<RegexInputProps> = memo(function RegexInput({id, mov
     return (
         <div ref={dropRef} style={containerStyle} className={"regex-input"} data-handler-id={handlerId}>
             <div style={handleStyle} ref={dragRef}>
-            <MdDragIndicator ref={dragRef} />
+                <MdDragIndicator ref={dragRef}/>
             </div>
             <input type="text" value={regexStr} onChange={(e) => handleRegexChange(e.target.value)}/>
-            {showRemoveButton && <button onClick={removeRegex}><MdRemoveCircle /></button>}
+            <label htmlFor={`invert-${id}`}>Invert: </label>
+            <input id={`invert-${id}`}
+                   type={"checkbox"}
+                   checked={invert}
+                   disabled={!!error}
+                   onChange={(e) => handleInvertChange(e.target.checked)}/>
+            {showRemoveButton && <button onClick={removeFilter}><MdRemoveCircle/></button>}
             {error && <div>{error}</div>}
         </div>
     )
