@@ -1,12 +1,13 @@
 import type {FC} from 'react'
 import React, {memo, useState} from 'react'
+import {Group, NumberInput} from '@mantine/core';
 import {FilterProps} from "@/app/components/filters/FilterProps";
 
 
 const MAX_WORD_LENGTH = 23
 
 
-export const LengthFilter: FC<FilterProps> = memo(function LengthInput({id, setFilter}) {
+export const LengthFilter: FC<FilterProps> = memo(function LengthInput({setFilter}) {
     const [minLength, setMinLength] = useState(0);
     const [maxLength, setMaxLength] = useState(MAX_WORD_LENGTH);
 
@@ -33,12 +34,20 @@ export const LengthFilter: FC<FilterProps> = memo(function LengthInput({id, setF
 
     return (
         <>
-            <label htmlFor={`min-length-${id}`}>Min: </label>
-            <input id={`min-length-${id}`} type="number" value={minLength} min={0} max={MAX_WORD_LENGTH}
-                   onChange={(e) => handleChangedMinLength(+e.target.value)}/>
-            <label htmlFor={`max-length-${id}`}>Max: </label>
-            <input id={`max-length-${id}`} type="number" value={maxLength} min={0} max={MAX_WORD_LENGTH}
-                   onChange={(e) => handleChangedMaxLength(+e.target.value)}/>
+            <Group>
+                <NumberInput
+                    description={"Mininum Length"}
+                    value={minLength}
+                    min={0}
+                    max={MAX_WORD_LENGTH}
+                    onChange={(val) => handleChangedMinLength(+val)}/>
+                <NumberInput
+                    description={"Maximum Length"}
+                    value={maxLength}
+                    min={0}
+                    max={MAX_WORD_LENGTH}
+                    onChange={(val) => handleChangedMaxLength(+val)}/>
+            </Group>
         </>
     )
 })

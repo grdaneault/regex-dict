@@ -1,9 +1,9 @@
 import type {FC} from 'react'
 import React, {memo, useState} from 'react'
-import { TextInput } from '@mantine/core';
+import {TextInput} from '@mantine/core';
 import {FilterProps} from "@/app/components/filters/FilterProps";
 
-export const RegexFilter: FC<FilterProps> = memo(function RegexInput({id, setFilter}) {
+export const RegexFilter: FC<FilterProps> = memo(function RegexInput({setFilter}) {
     const [regexStr, setRegexStr] = useState("");
     const [error, setError] = useState("");
 
@@ -26,8 +26,8 @@ export const RegexFilter: FC<FilterProps> = memo(function RegexInput({id, setFil
                 placeholder="RegEx"
                 type="text"
                 value={regexStr}
+                error={error}
                 onChange={(e) => handleRegexChange(e.target.value)}/>
-            {error && <div>{error}</div>}
         </>
     )
 })

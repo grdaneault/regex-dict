@@ -58,4 +58,5 @@ div.results-container {
 ul.results-list {
   column-count: 4;
   max-width: 80%;
+  min-width: 50%;
 }
