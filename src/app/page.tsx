@@ -4,9 +4,9 @@ import words from './data/words'
 import {List} from 'immutable';
 import React, {useState} from "react";
 import {DndProvider} from "react-dnd";
-import {FilterContainer} from "@/app/components/FilterContainer";
+import {FilterPanel} from "@/app/components/FilterPanel";
 import {HTML5Backend} from "react-dnd-html5-backend";
-import {DEFAULT_FILTER, FilterFunc, FilterState} from "@/app/data/model";
+import {DEFAULT_FILTER, FilterFunc, FilterState, FilterType} from "@/app/data/model";
 
 
 const filterWords = (filter: FilterFunc, wordList: List<string> | undefined): List<string> => {
@@ -16,13 +16,13 @@ const filterWords = (filter: FilterFunc, wordList: List<string> | undefined): Li
 
 export default function Home() {
 
-    const [filterList, setFilterList] = useState(List.of({id: 0, filterFunc: DEFAULT_FILTER, remainingWords: words} as FilterState));
+    const [filterList, setFilterList] = useState(List.of({id: 0, type: FilterType.Choose, func: DEFAULT_FILTER, remainingWords: words} as FilterState));
 
     const addFilter = (): void => {
         const nextId = filterList.max((a, b) => a.id - b.id)!.id + 1
         const lastEntry = filterList.get(filterList.size - 1)
         const remainingWords = lastEntry ? lastEntry.remainingWords : words;
-        setFilterList(filterList.push({id: nextId, filterFunc: DEFAULT_FILTER, remainingWords: remainingWords}))
+        setFilterList(filterList.push({id: nextId, enabled: false, type: FilterType.Choose, func: DEFAULT_FILTER, remainingWords: remainingWords}))
         console.log(filterList)
     }
 
@@ -45,9 +45,9 @@ export default function Home() {
 
         for (let i = index; i < filterList.size; i++) {
             const curr = list.get(i) as FilterState;
-            lastWords = filterWords(curr.filterFunc, lastWords)
+            lastWords = filterWords(curr.func, lastWords)
             const updated = {...curr, remainingWords: lastWords} as FilterState;
-            console.log(`Adding updated FilterState(id=${updated.id}, regex=${updated.filterFunc}, num_words=${lastWords.size})`)
+            console.log(`Adding updated FilterState(id=${updated.id}, regex=${updated.func}, num_words=${lastWords.size})`)
             newList = newList.push(updated)
         }
 
@@ -73,21 +73,22 @@ export default function Home() {
     }
 
 
-    const setFilter = (id: number, filter: FilterFunc): void => {
+    const setFilter = (id: number, updatedFilter: {type?: FilterType, func?: FilterFunc, enabled?: boolean}): void => {
         const index = indexById(id)
-        console.log(`Setting regex id=${id} to ${filter}`)
-        setFilterList(recalculateListFromIndex(filterList.set(index, {id, filterFunc: filter, remainingWords: List.of<string>()}), index))
+        console.log(`Setting regex id=${id} to ${updatedFilter}`)
+        const existingFilter = filterList.get(index) as FilterState;
+        setFilterList(recalculateListFromIndex(filterList.set(index, {...existingFilter, ...updatedFilter, remainingWords: List.of<string>()}), index))
     }
 
     const lastResult = filterList.get(filterList.size - 1)!.remainingWords;
 
     return (
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
-            <div className="background -rotate-12">{lastResult.slice(0, 1000).join(" ")}</div>
+            {/*<div className="background -rotate-12">{lastResult.slice(0, 1000).join(" ")}</div>*/}
             <div className="content">
                 <DndProvider backend={HTML5Backend}>
-                    <FilterContainer filterList={filterList} setFilter={setFilter} moveFilter={reorderFilter}
-                                     removeFilter={removeFilter} addFilter={addFilter}/>
+                    <FilterPanel filterList={filterList} setFilter={setFilter} moveFilter={reorderFilter}
+                                 removeFilter={removeFilter} addFilter={addFilter}/>
                 </DndProvider>
                 <div className={"results-container"}>
                     <h2>{lastResult.size > 1000 && "1000 of "}{lastResult.size} {lastResult.size === 1 ? "Result" : "Results"}</h2>

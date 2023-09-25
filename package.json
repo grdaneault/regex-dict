@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@mantine/core": "^7.0.1",
+    "@mantine/hooks": "^7.0.1",
     "@types/node": "20.4.8",
     "@types/react": "18.2.18",
     "@types/react-dom": "18.2.7",
@@ -17,8 +19,7 @@
     "eslint-config-next": "13.4.12",
     "immutability-helper": "^3.1.1",
     "immutable": "^4.3.2",
-    "next": "13.4.13",
-    "postcss": "8.4.27",
+    "next": "13.5.2",
     "react": "18.2.0",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
@@ -30,6 +31,9 @@
   },
   "devDependencies": {
     "@types/immutable": "^3.8.7",
-    "@types/underscore": "^1.11.6"
+    "@types/underscore": "^1.11.6",
+    "postcss": "^8.4.30",
+    "postcss-preset-mantine": "^1.7.0",
+    "postcss-simple-vars": "^7.0.1"
   }
 }
