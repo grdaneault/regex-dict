@@ -1,8 +1,9 @@
 import {FC} from 'react'
-import {RegexFilter} from "@/app/components/filters/RegexFilter";
 import {List} from "immutable";
 import {FilterFunc, FilterState, FilterType} from "@/app/data/model";
 import {FilterContainer} from "@/app/components/FilterContainer";
+import {Button} from "@mantine/core";
+import {IconPlus} from "@tabler/icons-react";
 
 export interface FilterPanelProps {
     filterList: List<FilterState>
@@ -30,7 +31,10 @@ export const FilterPanel: FC<FilterPanelProps> = function RegexContainer({filter
                         showRemoveButton={removeEnabled}
                     />
                 ))}
-                <button onClick={addFilter}>Add</button>
+                <Button
+                    onClick={addFilter}
+                    size={"compact-sm"}
+                    rightSection={<IconPlus size={14}/>}>Add</Button>
             </div>
         </>
     );

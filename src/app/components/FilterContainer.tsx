@@ -1,6 +1,6 @@
 import type {CSSProperties, FC} from 'react'
 import React, {memo, useMemo, useRef, useState} from 'react'
-import {ActionIcon, Checkbox} from '@mantine/core';
+import {ActionIcon, CloseButton, Group, MantineSize, Paper, Tooltip} from '@mantine/core';
 import {useDrag, useDrop} from 'react-dnd'
 import {ItemTypes} from "@/app/components/ItemTypes";
 import {DEFAULT_FILTER, FilterFunc, FilterType} from "@/app/data/model";
@@ -8,12 +8,41 @@ import {RegexFilter} from "@/app/components/filters/RegexFilter";
 import {LengthFilter} from "@/app/components/filters/LengthFilter";
 import {FilterTypeChooser} from "@/app/components/FilterTypeChooser";
 import {PalindromeFilter} from "@/app/components/filters/PalindromeFilter";
-import {IconGripVertical, IconTrash} from "@tabler/icons-react";
+import {IconEye, IconGripVertical, IconRotate360} from "@tabler/icons-react";
+
+const baseContainerStyle: CSSProperties = {
+    marginBottom: "1rem",
+    marginTop: "1rem",
+    display: "flex",
+    flexDirection: "row",
+    gap: "1rem"
+}
 
 const handleStyle: CSSProperties = {
-    display: 'inline-block',
     marginRight: '0.5rem',
     cursor: 'move',
+    width: '1rem',
+    alignSelf: 'center'
+}
+
+const filterStyle: CSSProperties = {
+    flexGrow: 1,
+    padding: "0.5rem 0"
+}
+
+const buttonIconStyle: CSSProperties = {
+    width: '70%',
+    height: '70%'
+}
+
+const buttonContainerStyle: CSSProperties = {
+    // display: 'flex',
+    alignSelf: 'end'
+}
+
+const closeButtonStyle: CSSProperties = {
+    width: 'auto'
+
 }
 
 export interface FilterContainerProps {
@@ -106,29 +135,57 @@ export const FilterContainer: FC<FilterContainerProps> = memo(
         connectDrop(dropRef)
 
         const opacity = isDragging ? 0.5 : 1
-        const containerStyle = useMemo(() => ({opacity}), [opacity])
+        const containerStyle = useMemo(() => ({opacity, ...baseContainerStyle}), [opacity])
+
+        const invertActionText = inverted ? "Un-invert Filter" : "Invert Filter";
+        const enableActionText = enabled ? "Disable Filter" : "Enable Filter";
+        const buttonIconSize = "md" as MantineSize;
+
         return (
-            <div ref={dropRef} style={containerStyle} className={"regex-input"} data-handler-id={handlerId}>
+            <Paper shadow={"xs"} withBorder p={"x1"} style={containerStyle} ref={dropRef} data-handler-id={handlerId}>
                 <div style={handleStyle} ref={dragRef}>
-                    <IconGripVertical ref={dragRef}/>
+                    <IconGripVertical ref={dragRef} size={"2em"}/>
                 </div>
-                <div>
+                <div style={filterStyle}>
                     {type === FilterType.Choose && <FilterTypeChooser id={id} setFilterType={setFilterType}/>}
                     {type === FilterType.RegularExpression && <RegexFilter id={id} setFilter={handleFilterChanged}/>}
                     {type === FilterType.Length && <LengthFilter id={id} setFilter={handleFilterChanged}/>}
                     {type === FilterType.Palindrome && <PalindromeFilter id={id} setFilter={handleFilterChanged}/>}
                 </div>
-                <div>
-                    <Checkbox
-                        label="Inverted"
-                        checked={inverted}
-                        onChange={(e) => handleInvertedChanged(e.target.checked)}/>
-                    <Checkbox
-                        label="Enabled"
-                        checked={enabled}
-                        onChange={(e) => handleEnabledChanged(e.target.checked)}/>
-                    {showRemoveButton && <ActionIcon onClick={removeFilter} variant={"light"}><IconTrash/></ActionIcon>}
-                </div>
-            </div>
+                <Group style={buttonContainerStyle}>
+                    <ActionIcon.Group>
+                        <Tooltip label={invertActionText}>
+                            <ActionIcon
+                                aria-label={invertActionText}
+                                onClick={() => handleInvertedChanged(!inverted)}
+                                variant={inverted ? "filled" : "default"}
+                                size={buttonIconSize}>
+                                <IconRotate360 style={buttonIconStyle}/>
+                            </ActionIcon>
+                        </Tooltip>
+                        <Tooltip label={enableActionText}>
+                            <ActionIcon
+                                aria-label={enableActionText}
+                                onClick={() => handleEnabledChanged(!enabled)}
+                                variant={enabled ? "filled" : "default"}
+                                size={buttonIconSize}>
+                                <IconEye style={buttonIconStyle}/>
+                            </ActionIcon>
+                        </Tooltip>
+                    </ActionIcon.Group>
+                </Group>
+
+                {showRemoveButton &&
+                    <div style={closeButtonStyle}>
+                        <Tooltip label={"Remove Filter"}>
+                            <CloseButton
+                                onClick={removeFilter}
+                                variant={"subtle"}
+                                size={buttonIconSize}>
+                            </CloseButton>
+                        </Tooltip>
+                    </div>}
+
+            </Paper>
         );
     })
