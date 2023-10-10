@@ -1,0 +1,32 @@
+.filterContainer {
+    margin: 1rem 0;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+}
+
+.dragHandle {
+    flex-grow: 0;
+    margin-right: 0.4rem;
+    cursor: move;
+    align-self: center;
+}
+
+.filter {
+    flex-grow: 1;
+    padding: 0.5rem 0;
+}
+
+.filterToggleContainer {
+    flex-grow: 0;
+}
+
+.filterToggle {
+    width: 70%;
+    height: 70%;
+}
+
+.closeButton {
+    width: auto;
+    flex-grow: 0;
+}

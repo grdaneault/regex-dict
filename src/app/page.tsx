@@ -3,9 +3,7 @@
 import words from './data/words'
 import {List} from 'immutable';
 import React, {useState} from "react";
-import {DndProvider} from "react-dnd";
 import {FilterPanel} from "@/app/components/FilterPanel";
-import {HTML5Backend} from "react-dnd-html5-backend";
 import {DEFAULT_FILTER, FilterFunc, FilterState, FilterType} from "@/app/data/model";
 
 
@@ -86,10 +84,8 @@ export default function Home() {
         <main className="flex min-h-screen flex-col items-center justify-between p-24">
             {/*<div className="background -rotate-12">{lastResult.slice(0, 1000).join(" ")}</div>*/}
             <div className="content">
-                <DndProvider backend={HTML5Backend}>
-                    <FilterPanel filterList={filterList} setFilter={setFilter} moveFilter={reorderFilter}
-                                 removeFilter={removeFilter} addFilter={addFilter}/>
-                </DndProvider>
+                <FilterPanel filterList={filterList} setFilter={setFilter} moveFilter={reorderFilter}
+                             removeFilter={removeFilter} addFilter={addFilter}/>
                 <div className={"results-container"}>
                     <h2>{lastResult.size > 1000 && "1000 of "}{lastResult.size} {lastResult.size === 1 ? "Result" : "Results"}</h2>
                     <ul className={"results-list"}>
