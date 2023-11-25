@@ -1,5 +1,10 @@
+/** Add the padding here because adding it on the .filterContainer causes issues with drag/drop */
+.filterParent {
+    padding: 0.25rem 0;
+}
+
 .filterContainer {
-    margin: 1rem 0;
+    padding: 0.5rem 0.5rem;
     display: flex;
     flex-direction: row;
     gap: 1rem;
@@ -7,9 +12,15 @@
 
 .dragHandle {
     flex-grow: 0;
-    margin-right: 0.4rem;
+    margin: 0;
     cursor: move;
     align-self: center;
+}
+
+.filterAndControls {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
 }
 
 .filter {
@@ -18,7 +29,8 @@
 }
 
 .filterToggleContainer {
-    flex-grow: 0;
+    display: inline-block;
+    margin-right: 0.5em;
 }
 
 .filterToggle {
@@ -26,7 +38,7 @@
     height: 70%;
 }
 
-.closeButton {
-    width: auto;
-    flex-grow: 0;
+.controls {
+    align-self: end;
+    height: 0;
 }

@@ -42,14 +42,3 @@ div.background {
 input {
   color: black;
 }
-
-div.results-container {
-  padding: 3em;
-  background-color: #333333;
-}
-
-ul.results-list {
-  column-count: 4;
-  max-width: 80%;
-  min-width: 50%;
-}

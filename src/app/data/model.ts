@@ -16,5 +16,6 @@ export enum FilterType {
     Choose,
     Length,
     RegularExpression,
+    RequiredLetters,
     Palindrome,
 }

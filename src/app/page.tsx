@@ -5,6 +5,7 @@ import {List} from 'immutable';
 import React, {useState} from "react";
 import {FilterPanel} from "@/app/components/FilterPanel";
 import {DEFAULT_FILTER, FilterFunc, FilterState, FilterType} from "@/app/data/model";
+import {Paper, SimpleGrid, StyleProp} from "@mantine/core";
 
 
 const filterWords = (filter: FilterFunc, wordList: List<string> | undefined): List<string> => {
@@ -14,13 +15,24 @@ const filterWords = (filter: FilterFunc, wordList: List<string> | undefined): Li
 
 export default function Home() {
 
-    const [filterList, setFilterList] = useState(List.of({id: 0, type: FilterType.Choose, func: DEFAULT_FILTER, remainingWords: words} as FilterState));
+    const [filterList, setFilterList] = useState(List.of({
+        id: 0,
+        type: FilterType.Choose,
+        func: DEFAULT_FILTER,
+        remainingWords: words
+    } as FilterState));
 
     const addFilter = (): void => {
         const nextId = filterList.max((a, b) => a.id - b.id)!.id + 1
         const lastEntry = filterList.get(filterList.size - 1)
         const remainingWords = lastEntry ? lastEntry.remainingWords : words;
-        setFilterList(filterList.push({id: nextId, enabled: false, type: FilterType.Choose, func: DEFAULT_FILTER, remainingWords: remainingWords}))
+        setFilterList(filterList.push({
+            id: nextId,
+            enabled: false,
+            type: FilterType.Choose,
+            func: DEFAULT_FILTER,
+            remainingWords: remainingWords
+        }))
         console.log(filterList)
     }
 
@@ -71,28 +83,57 @@ export default function Home() {
     }
 
 
-    const setFilter = (id: number, updatedFilter: {type?: FilterType, func?: FilterFunc, enabled?: boolean}): void => {
+    const setFilter = (id: number, updatedFilter: {
+        type?: FilterType,
+        func?: FilterFunc,
+        enabled?: boolean
+    }): void => {
         const index = indexById(id)
         console.log(`Setting regex id=${id} to ${updatedFilter}`)
         const existingFilter = filterList.get(index) as FilterState;
-        setFilterList(recalculateListFromIndex(filterList.set(index, {...existingFilter, ...updatedFilter, remainingWords: List.of<string>()}), index))
+        setFilterList(recalculateListFromIndex(filterList.set(index, {
+            ...existingFilter, ...updatedFilter,
+            remainingWords: List.of<string>()
+        }), index))
     }
 
     const lastResult = filterList.get(filterList.size - 1)!.remainingWords;
 
+    const wordsToShow = lastResult.slice(0, 1000);
+    const longestLen = (wordsToShow.maxBy((val) => val.length) || "").length;
+
+    const LEN_1_COLUMNS: StyleProp<number> = {base: 4, xs: 6, sm: 8, lg: 10};
+    const LEN_7_COLUMNS: StyleProp<number> = {base: 3, xs: 3, sm: 4, md: 5, lg: 8}
+    const LEN_15_COLUMNS: StyleProp<number> = {base: 2, xs: 3, sm: 4, md: 5, lg: 6}
+
+    let columns: StyleProp<number> = longestLen >= 14 ? LEN_15_COLUMNS : longestLen >= 7 ? LEN_7_COLUMNS : LEN_1_COLUMNS;
+
+
     return (
-        <main className="flex min-h-screen flex-col items-center justify-between p-24">
+        <main className="flex min-h-screen flex-col items-center
+            p-1 w-full
+             xl:max-w-6xl
+             mx-auto
+
+             border-2
+             border-red-600
+             sm:border-orange-500
+             md:border-yellow-400
+             lg:border-blue-400
+             xl:border-green-400
+
+             gap-2
+             ">
             {/*<div className="background -rotate-12">{lastResult.slice(0, 1000).join(" ")}</div>*/}
-            <div className="content">
-                <FilterPanel filterList={filterList} setFilter={setFilter} moveFilter={reorderFilter}
-                             removeFilter={removeFilter} addFilter={addFilter}/>
-                <div className={"results-container"}>
-                    <h2>{lastResult.size > 1000 && "1000 of "}{lastResult.size} {lastResult.size === 1 ? "Result" : "Results"}</h2>
-                    <ul className={"results-list"}>
-                        {lastResult.slice(0, 1000).map((word) => <li key={word}>{word}</li>)}
-                    </ul>
-                </div>
-            </div>
+            <FilterPanel filterList={filterList} setFilter={setFilter} moveFilter={reorderFilter}
+                         removeFilter={removeFilter} addFilter={addFilter}/>
+            <Paper className={"p-4 text-left w-full"} shadow={"xs"}
+                   withBorder>
+                <h2>{lastResult.size > 1000 && "1000 of "}{lastResult.size} {lastResult.size === 1 ? "Result" : "Results"}</h2>
+                <SimpleGrid cols={columns}>
+                    {wordsToShow.map((word) => <div key={word}>{word}</div>)}
+                </SimpleGrid>
+            </Paper>
         </main>
     )
 }

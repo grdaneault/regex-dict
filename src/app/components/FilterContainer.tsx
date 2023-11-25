@@ -9,6 +9,7 @@ import {PalindromeFilter} from "@/app/components/filters/PalindromeFilter";
 import {IconEye, IconGripVertical, IconRotate360} from "@tabler/icons-react";
 import {Draggable} from "@hello-pangea/dnd";
 import classes from './FilterContainer.module.css';
+import {RequiredLettersFilter} from "@/app/components/filters/RequiredLettersFilter";
 
 
 export interface FilterContainerProps {
@@ -77,67 +78,76 @@ export const FilterContainer: FC<FilterContainerProps> = memo(
 
         const invertActionText = inverted ? "Un-invert Filter" : "Invert Filter";
         const enableActionText = enabled ? "Disable Filter" : "Enable Filter";
-        const buttonIconSize = "md" as MantineSize;
+        const buttonIconSize = "sm" as MantineSize;
 
         return (
             <Draggable draggableId={`${id}`} index={index}>
                 {(provided) => (
-                    <Paper
-                        shadow={"xs"}
-                        withBorder
-                        p={"x1"}
-                        {...provided.draggableProps}
-                        ref={provided.innerRef}
-                        classNames={{root: classes.filterContainer}}
+                    <div {...provided.draggableProps}
+                         ref={provided.innerRef}
+                         className={classes.filterParent}
                     >
-                        <div className={classes.dragHandle} {...provided.dragHandleProps} >
-                            <IconGripVertical size={"2em"}/>
-                        </div>
-                        <div className={classes.filter}>
-                            {type === FilterType.Choose && <FilterTypeChooser id={id} setFilterType={setFilterType}/>}
-                            {type === FilterType.RegularExpression &&
-                                <RegexFilter id={id} setFilter={handleFilterChanged}/>}
-                            {type === FilterType.Length && <LengthFilter id={id} setFilter={handleFilterChanged}/>}
-                            {type === FilterType.Palindrome &&
-                                <PalindromeFilter id={id} setFilter={handleFilterChanged}/>}
-                        </div>
-                        <Group className={classes.filterToggleContainer}>
-                            <ActionIcon.Group>
-                                <Tooltip label={invertActionText}>
-                                    <ActionIcon
-                                        aria-label={invertActionText}
-                                        onClick={() => handleInvertedChanged(!inverted)}
-                                        variant={inverted ? "filled" : "default"}
-                                        disabled={type === FilterType.Choose}
-                                        size={buttonIconSize}>
-                                        <IconRotate360 className={classes.filterToggle}/>
-                                    </ActionIcon>
-                                </Tooltip>
-                                <Tooltip label={enableActionText}>
-                                    <ActionIcon
-                                        aria-label={enableActionText}
-                                        onClick={() => handleEnabledChanged(!enabled)}
-                                        variant={enabled ? "filled" : "default"}
-                                        disabled={type === FilterType.Choose}
-                                        size={buttonIconSize}>
-                                        <IconEye className={classes.filterToggle}/>
-                                    </ActionIcon>
-                                </Tooltip>
-                            </ActionIcon.Group>
-                        </Group>
+                        <Paper
+                            shadow={"xs"}
+                            withBorder
+                            p={"x1"}
+                            className={classes.filterContainer}
+                        >
+                            <div className={classes.dragHandle} {...provided.dragHandleProps} >
+                                <IconGripVertical size={"1.5em"}/>
+                            </div>
+                            <div className={classes.filterAndControls}>
+                                <div className={classes.controls}>
+                                    {type !== FilterType.Choose &&
+                                        <Group className={classes.filterToggleContainer}>
+                                            <ActionIcon.Group>
+                                                <Tooltip label={invertActionText}>
+                                                    <ActionIcon
+                                                        aria-label={invertActionText}
+                                                        onClick={() => handleInvertedChanged(!inverted)}
+                                                        variant={inverted ? "filled" : "default"}
+                                                        size={buttonIconSize}>
+                                                        <IconRotate360 className={classes.filterToggle}/>
+                                                    </ActionIcon>
+                                                </Tooltip>
+                                                <Tooltip label={enableActionText}>
+                                                    <ActionIcon
+                                                        aria-label={enableActionText}
+                                                        onClick={() => handleEnabledChanged(!enabled)}
+                                                        variant={enabled ? "filled" : "default"}
+                                                        size={buttonIconSize}>
+                                                        <IconEye className={classes.filterToggle}/>
+                                                    </ActionIcon>
+                                                </Tooltip>
+                                            </ActionIcon.Group>
+                                        </Group>}
 
-                        {showRemoveButton &&
-                            <div className={classes.closeButton}>
-                                <Tooltip label={"Remove Filter"}>
-                                    <CloseButton
-                                        onClick={removeFilter}
-                                        variant={"subtle"}
-                                        size={buttonIconSize}>
-                                    </CloseButton>
-                                </Tooltip>
-                            </div>}
+                                    <Tooltip label={"Remove Filter"}>
+                                        <CloseButton
+                                            onClick={removeFilter}
+                                            variant={"subtle"}
+                                            disabled={!showRemoveButton}
+                                            size={buttonIconSize}>
+                                        </CloseButton>
+                                    </Tooltip>
+                                </div>
+                                <div className={classes.filter}>
+                                    {type === FilterType.Choose &&
+                                        <FilterTypeChooser id={id} setFilterType={setFilterType}/>}
+                                    {type === FilterType.RegularExpression &&
+                                        <RegexFilter id={id} setFilter={handleFilterChanged}/>}
+                                    {type === FilterType.RequiredLetters &&
+                                        <RequiredLettersFilter id={id} setFilter={handleFilterChanged}/>}
+                                    {type === FilterType.Length &&
+                                        <LengthFilter id={id} setFilter={handleFilterChanged}/>}
+                                    {type === FilterType.Palindrome &&
+                                        <PalindromeFilter id={id} setFilter={handleFilterChanged}/>}
 
-                    </Paper>
+                                </div>
+                            </div>
+
+                        </Paper>
+                    </div>
                 )}
             </Draggable>
         );
