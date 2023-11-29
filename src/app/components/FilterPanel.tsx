@@ -22,7 +22,7 @@ export const FilterPanel: FC<FilterPanelProps> = function RegexContainer({
                                                                              removeFilter
                                                                          }) {
 
-    const removeEnabled = filterList.size > 1;
+    const isLastFilter = filterList.size === 1;
 
     const onDragEnd: OnDragEndResponder = (result) => {
         if (!result.destination) {
@@ -56,7 +56,7 @@ export const FilterPanel: FC<FilterPanelProps> = function RegexContainer({
                                         enabled?: boolean
                                     }) => setFilter(filter.id, newFilter)}
                                     removeFilter={() => removeFilter(filter.id)}
-                                    showRemoveButton={removeEnabled}
+                                    isLastFilter={isLastFilter}
                                 />
                             ))
                             }

@@ -18,7 +18,7 @@ export interface FilterContainerProps {
     type?: FilterType
     setFilter: (updatedFilter: { type?: FilterType, func?: FilterFunc, enabled?: boolean }) => void
     removeFilter: () => void
-    showRemoveButton: boolean
+    isLastFilter: boolean
 }
 
 export const FilterContainer: FC<FilterContainerProps> = memo(
@@ -28,7 +28,7 @@ export const FilterContainer: FC<FilterContainerProps> = memo(
                             type,
                             setFilter,
                             removeFilter,
-                            showRemoveButton
+                            isLastFilter
                         }) {
         const [inverted, setInverted] = useState(false)
         const [enabled, setEnabled] = useState(false)
@@ -80,6 +80,14 @@ export const FilterContainer: FC<FilterContainerProps> = memo(
         const enableActionText = enabled ? "Disable Filter" : "Enable Filter";
         const buttonIconSize = "sm" as MantineSize;
 
+        const handleRemoveButtonClicked = () => {
+            if (isLastFilter) {
+                setFilterType(FilterType.Choose, DEFAULT_FILTER)
+            } else {
+                removeFilter()
+            }
+        }
+
         return (
             <Draggable draggableId={`${id}`} index={index}>
                 {(provided) => (
@@ -121,15 +129,15 @@ export const FilterContainer: FC<FilterContainerProps> = memo(
                                                 </Tooltip>
                                             </ActionIcon.Group>
                                         </Group>}
-
-                                    <Tooltip label={"Remove Filter"}>
-                                        <CloseButton
-                                            onClick={removeFilter}
-                                            variant={"subtle"}
-                                            disabled={!showRemoveButton}
-                                            size={buttonIconSize}>
-                                        </CloseButton>
-                                    </Tooltip>
+                                    {!(isLastFilter && type === FilterType.Choose) &&
+                                        <Tooltip label={"Remove Filter"}>
+                                            <CloseButton
+                                                onClick={handleRemoveButtonClicked}
+                                                variant={"subtle"}
+                                                size={buttonIconSize}>
+                                            </CloseButton>
+                                        </Tooltip>
+                                    }
                                 </div>
                                 <div className={classes.filter}>
                                     {type === FilterType.Choose &&

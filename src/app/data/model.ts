@@ -10,7 +10,7 @@ export interface FilterState {
 
 export type FilterFunc = (val: string) => boolean
 
-export const DEFAULT_FILTER = (_: string) => true
+export const DEFAULT_FILTER:FilterFunc = (_: string) => true
 
 export enum FilterType {
     Choose,
