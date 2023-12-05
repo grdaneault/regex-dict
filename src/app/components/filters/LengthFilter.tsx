@@ -10,8 +10,11 @@ const MAX_WORD_LENGTH = 23
 
 export const LengthFilter: FC<FilterProps> = memo(function LengthInput({setFilter}) {
     const [isRange, setIsRange] = useState(false);
-    const [minLength, setMinLength] = useState(0);
+    const [minLength, setMinLength] = useState(1);
     const [maxLength, setMaxLength] = useState(MAX_WORD_LENGTH);
+
+    const [minLengthInput, setMinLengthInput] = useState("");
+    const [maxLengthInput, setMaxLengthInput] = useState("");
 
     const makeLengthFilter = (minLength: number, maxLength: number) => {
         return (val: string) => {
@@ -19,19 +22,28 @@ export const LengthFilter: FC<FilterProps> = memo(function LengthInput({setFilte
         }
     }
 
+    const handleValueChanged = (handler: (val: number) => void, defaultValue: number, valueSetter: (val: string) => void) => {
+        return (val: string) => {
+            valueSetter(val)
+            if (val !== "") {
+                const numericVal = parseInt(val)
+                handler(numericVal)
+            } else {
+                handler(defaultValue)
+            }
+        }
+    }
+
+
     const handleChangedMinLength = (newMinLength: number) => {
         newMinLength = newMinLength < 0 ? 0 : newMinLength;
-        const newMaxLength = newMinLength > maxLength ? newMinLength : maxLength;
-        setFilter(makeLengthFilter(newMinLength, newMaxLength));
-        setMaxLength(newMaxLength);
+        setFilter(makeLengthFilter(newMinLength, maxLength));
         setMinLength(newMinLength);
     }
 
     const handleChangedMaxLength = (newMaxLength: number) => {
-        const newMinLength = newMaxLength < minLength ? newMaxLength : minLength;
-        setFilter(makeLengthFilter(newMinLength, newMaxLength));
+        setFilter(makeLengthFilter(minLength, newMaxLength));
         setMaxLength(newMaxLength);
-        setMinLength(newMinLength);
     }
 
     const handleChangedExactLength = (newLength: number) => {
@@ -46,22 +58,31 @@ export const LengthFilter: FC<FilterProps> = memo(function LengthInput({setFilte
         setFilter(makeLengthFilter(minLength, minLength))
     }
 
+    const enableRangeMode = () => {
+        setIsRange(true);
+        const maxLength = maxLengthInput !== "" ? parseInt(maxLengthInput) : MAX_WORD_LENGTH
+        setMaxLength(maxLength);
+        setFilter(makeLengthFilter(minLength, maxLength))
+    }
+
     if (isRange) {
         return (
             <>
                 <Group>
                     <NumberInput
                         description={"Mininum Length"}
-                        value={minLength}
-                        min={0}
+                        value={minLengthInput}
+                        placeholder={minLength.toString()}
+                        min={1}
                         max={MAX_WORD_LENGTH}
-                        onChange={(val) => handleChangedMinLength(+val)}/>
+                        onChange={handleValueChanged(handleChangedMinLength, 1, setMinLengthInput)}/>
                     <NumberInput
                         description={"Maximum Length"}
-                        value={maxLength}
-                        min={0}
+                        value={maxLengthInput}
+                        placeholder={maxLength.toString()}
+                        min={1}
                         max={MAX_WORD_LENGTH}
-                        onChange={(val) => handleChangedMaxLength(+val)}/>
+                        onChange={handleValueChanged(handleChangedMaxLength, MAX_WORD_LENGTH, setMaxLengthInput)}/>
                     <Button onClick={disableRangeMode}
                             leftSection={<IconArrowsMinimize/>}
                             className={"self-end"}>Hide Range</Button>
@@ -74,11 +95,12 @@ export const LengthFilter: FC<FilterProps> = memo(function LengthInput({setFilte
                 <Group>
                     <NumberInput
                         description={"Length"}
-                        value={minLength}
-                        min={0}
+                        value={minLengthInput}
+                        placeholder={minLength.toString()}
+                        min={1}
                         max={MAX_WORD_LENGTH}
-                        onChange={(val) => handleChangedExactLength(+val)}/>
-                    <Button onClick={() => setIsRange(true)}
+                        onChange={handleValueChanged(handleChangedExactLength, 1, setMinLengthInput)}/>
+                    <Button onClick={enableRangeMode}
                             leftSection={<IconArrowsMaximize/>}
                             className={"self-end"}
                     >Show Range</Button>

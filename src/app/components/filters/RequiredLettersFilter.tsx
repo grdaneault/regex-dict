@@ -28,7 +28,7 @@ export const RequiredLettersFilter: FC<FilterProps> = memo(function RequiredLett
     }
 
     const handleFilteredLettersChange = (newLetters: string) => {
-        setFilteredLetters(newLetters);
+        setFilteredLetters(newLetters.toLowerCase());
         if (newLetters === "") {
             setMinimumMatches(0);
             setFilter(makeFilterFunction(newLetters, 0));

@@ -24,7 +24,7 @@ export const FilterTypeChooser: FC<FilterTypeChooserProps> = function FilterType
             <Button
                 leftSection={<IconSortAZ/>}
                 size={size}
-                onClick={() => setFilterType(FilterType.RequiredLetters, DEFAULT_FILTER)}>Letter Match</Button>
+                onClick={() => setFilterType(FilterType.RequiredLetters, DEFAULT_FILTER)}>Required Letters</Button>
             <Button
                 leftSection={<IconRuler3/>}
                 size={size}
