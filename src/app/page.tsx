@@ -41,23 +41,18 @@ export default function Home() {
     }
 
     const indexById = (id: number): number => {
-        const index = filterList.findIndex(r => r.id === id)
-        console.log(`Index of ${id} is ${index}`)
-        return index;
+        return filterList.findIndex(r => r.id === id)
     }
 
     const recalculateListFromIndex = (list: List<FilterState>, index: number): List<FilterState> => {
-        console.log("Updating from", index, "old length", list.size)
-
+        console.log(`Updating filters from ${index} to ${list.size}`)
         let newList = list.slice(0, index);
-        console.log(`Unaffected slice: ${newList.map(r => r.id).toJS()}`)
         let lastWords = index === 0 ? words : list.get(index - 1)!.remainingWords;
 
-        for (let i = index; i < filterList.size; i++) {
+        for (let i = index; i < list.size; i++) {
             const curr = list.get(i) as FilterState;
             lastWords = filterWords(curr.func, lastWords)
             const updated = {...curr, remainingWords: lastWords} as FilterState;
-            console.log(`Adding updated FilterState(id=${updated.id}, regex=${updated.func}, num_words=${lastWords.size})`)
             newList = newList.push(updated)
         }
 
@@ -67,10 +62,8 @@ export default function Home() {
     const removeFilter = (id: number): void => {
         const index = indexById(id);
         console.log(`Removing id=${id}/index=${index}`)
-        console.log(filterList.toObject())
-        const newList = filterList.splice(index, 1)
+        const newList = recalculateListFromIndex(filterList.splice(index, 1), index);
         setFilterList(newList);
-        console.log(newList.toObject())
     }
 
     const reorderFilter = (id: number, afterId: number): void => {
