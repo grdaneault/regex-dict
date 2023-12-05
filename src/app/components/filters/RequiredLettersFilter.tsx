@@ -1,13 +1,15 @@
 import type {FC} from 'react'
 import React, {memo, useState} from 'react'
-import {Group, NumberInput, TextInput} from '@mantine/core';
+import {Group, NumberInput, Switch, TextInput} from '@mantine/core';
 import {FilterProps} from "@/app/components/filters/FilterProps";
+import {DEFAULT_FILTER} from "@/app/data/model";
 
 export const RequiredLettersFilter: FC<FilterProps> = memo(function RequiredLettersFilter({setFilter}) {
     const [filteredLetters, setFilteredLetters] = useState("");
     const [minimumMatches, setMinimumMatches] = useState(1);
+    const [charsetMode, setCharsetMode] = useState(false)
 
-    const makeFilterFunction = (letters: string, minimumMatches: number) => {
+    const makeRequiredLettersFilterFunction = (letters: string, minimumMatches: number) => {
         const lettersSet = new Set<string>(letters.split(''));
 
         return (word: string) => {
@@ -27,22 +29,44 @@ export const RequiredLettersFilter: FC<FilterProps> = memo(function RequiredLett
         }
     }
 
-    const handleFilteredLettersChange = (newLetters: string) => {
-        setFilteredLetters(newLetters.toLowerCase());
-        if (newLetters === "") {
-            setMinimumMatches(0);
-            setFilter(makeFilterFunction(newLetters, 0));
-        } else if (minimumMatches === 0) {
-            setMinimumMatches(1);
-            setFilter(makeFilterFunction(newLetters, 1));
-        } else {
-            setFilter(makeFilterFunction(newLetters, minimumMatches));
+    const makeAllowedLettersFilterFunction = (letters: string) => {
+        const regex = new RegExp(`^[${letters}]+$`);
+        return (word: string) => {
+            return regex.test(word);
         }
+    }
+
+    const makeFilterFunction = (charsetMode: boolean, letters: string, minimumMatches: number) => {
+        if (charsetMode) {
+            return makeAllowedLettersFilterFunction(letters);
+        } else {
+            return makeRequiredLettersFilterFunction(letters, minimumMatches);
+        }
+    }
+
+    const handleFilteredLettersChange = (newLetters: string) => {
+        setFilteredLetters(sanitizeLetters(newLetters));
+        if (newLetters === "") {
+            setMinimumMatches(1);
+            setFilter(DEFAULT_FILTER)
+        } else {
+            setFilter(makeFilterFunction(charsetMode, newLetters, minimumMatches));
+        }
+    }
+
+    const sanitizeLetters = (newLetters: string) => {
+        // TODO could check for dupes here too
+        return newLetters.toLowerCase().replace(/[^a-z]/g, '');
     }
 
     const handleMinimumMatchesChange = (newMinimum: number) => {
         setMinimumMatches(newMinimum)
-        setFilter(makeFilterFunction(filteredLetters, newMinimum));
+        setFilter(makeFilterFunction(charsetMode, filteredLetters, newMinimum))
+    }
+
+    const handleCharsetModeChange = (newCharsetMode: boolean) => {
+        setCharsetMode(newCharsetMode)
+        setFilter(makeFilterFunction(newCharsetMode, filteredLetters, minimumMatches))
     }
 
     const minMinimumMatches = filteredLetters === "" ? 0 : 1
@@ -59,10 +83,16 @@ export const RequiredLettersFilter: FC<FilterProps> = memo(function RequiredLett
                     onChange={(e) => handleFilteredLettersChange(e.target.value)}/>
                 <NumberInput
                     description={"Minimum number of matches"}
+                    disabled={charsetMode}
                     value={minimumMatches}
                     min={minMinimumMatches}
                     max={maxMinimumMatches}
                     onChange={(val) => handleMinimumMatchesChange(+val)}/>
+                <Switch checked={charsetMode}
+                        label={"Allow only these letters"}
+                        onChange={(event) => handleCharsetModeChange(event.currentTarget.checked)}
+                        className={"self-end"}
+                />
             </Group>
         </>
     )
