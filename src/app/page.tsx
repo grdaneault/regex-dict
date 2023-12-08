@@ -117,7 +117,6 @@ export default function Home() {
 
              gap-2
              ">
-            {/*<div className="background -rotate-12">{lastResult.slice(0, 1000).join(" ")}</div>*/}
             <FilterPanel filterList={filterList} setFilter={setFilter} moveFilter={reorderFilter}
                          removeFilter={removeFilter} addFilter={addFilter}/>
             <Paper className={"p-4 text-left w-full"} shadow={"xs"}

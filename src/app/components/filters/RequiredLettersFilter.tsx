@@ -37,6 +37,11 @@ export const RequiredLettersFilter: FC<FilterProps> = memo(function RequiredLett
     }
 
     const makeFilterFunction = (charsetMode: boolean, letters: string, minimumMatches: number) => {
+        // When there are no letters to filter, don't filter anything
+        if (letters === "") {
+            return DEFAULT_FILTER;
+        }
+
         if (charsetMode) {
             return makeAllowedLettersFilterFunction(letters);
         } else {
