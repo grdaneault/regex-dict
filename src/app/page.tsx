@@ -107,21 +107,14 @@ export default function Home() {
             p-1 w-full
              xl:max-w-6xl
              mx-auto
-
-             border-2
-             border-red-600
-             sm:border-orange-500
-             md:border-yellow-400
-             lg:border-blue-400
-             xl:border-green-400
-
              gap-2
              ">
             <FilterPanel filterList={filterList} setFilter={setFilter} moveFilter={reorderFilter}
                          removeFilter={removeFilter} addFilter={addFilter}/>
             <Paper className={"p-4 text-left w-full"} shadow={"xs"}
                    withBorder>
-                <h2>{lastResult.size > 1000 && "1000 of "}{lastResult.size} {lastResult.size === 1 ? "Result" : "Results"}</h2>
+                <h2 className={"font-semibold"}>{lastResult.size > 1000 && "1000 of "}{lastResult.size} {lastResult.size === 1 ? "Result" : "Results"}</h2>
+                <hr className={"mb-4"}/>
                 <SimpleGrid cols={columns}>
                     {wordsToShow.map((word) => <div key={word}>{word}</div>)}
                 </SimpleGrid>
