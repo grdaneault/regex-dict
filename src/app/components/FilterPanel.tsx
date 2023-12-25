@@ -66,8 +66,8 @@ export const FilterPanel: FC<FilterPanelProps> = function RegexContainer({
                 </Droppable>
                 <Button
                     onClick={addFilter}
-                    size={"compact-sm"}
-                    rightSection={<IconPlus size={14}/>}>Add</Button>
+                    size={"md"}
+                    rightSection={<IconPlus size={14}/>}>Add Filter</Button>
             </DragDropContext>
         </div>
     );

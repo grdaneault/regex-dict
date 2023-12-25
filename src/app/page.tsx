@@ -5,7 +5,7 @@ import {List} from 'immutable';
 import React, {useState} from "react";
 import {FilterPanel} from "@/app/components/FilterPanel";
 import {DEFAULT_FILTER, FilterFunc, FilterState, FilterType} from "@/app/data/model";
-import {Paper, SimpleGrid, StyleProp} from "@mantine/core";
+import {Divider, Paper, SimpleGrid, StyleProp, Text} from "@mantine/core";
 
 
 const filterWords = (filter: FilterFunc, wordList: List<string> | undefined): List<string> => {
@@ -90,9 +90,18 @@ export default function Home() {
         }), index))
     }
 
+    const buildResultCountStr = (count: number, resultCap: number) => {
+        if (count > resultCap) {
+            return `${resultCap} of ${count} Results`;
+        }
+        return `${count} ${lastResult.size === 1 ? "Result" : "Results"}`;
+    }
+
     const lastResult = filterList.get(filterList.size - 1)!.remainingWords;
 
-    const wordsToShow = lastResult.slice(0, 1000);
+    const resultCap = 1000;
+
+    const wordsToShow = lastResult.slice(0, resultCap);
     const longestLen = (wordsToShow.maxBy((val) => val.length) || "").length;
 
     const LEN_1_COLUMNS: StyleProp<number> = {base: 4, xs: 6, sm: 8, lg: 10};
@@ -100,7 +109,6 @@ export default function Home() {
     const LEN_15_COLUMNS: StyleProp<number> = {base: 2, xs: 3, sm: 4, md: 5, lg: 6}
 
     let columns: StyleProp<number> = longestLen >= 14 ? LEN_15_COLUMNS : longestLen >= 7 ? LEN_7_COLUMNS : LEN_1_COLUMNS;
-
 
     return (
         <main className="flex min-h-screen flex-col items-center
@@ -111,12 +119,17 @@ export default function Home() {
              ">
             <FilterPanel filterList={filterList} setFilter={setFilter} moveFilter={reorderFilter}
                          removeFilter={removeFilter} addFilter={addFilter}/>
-            <Paper className={"p-4 text-left w-full"} shadow={"xs"}
-                   withBorder>
-                <h2 className={"font-semibold"}>{lastResult.size > 1000 && "1000 of "}{lastResult.size} {lastResult.size === 1 ? "Result" : "Results"}</h2>
-                <hr className={"mb-4"}/>
-                <SimpleGrid cols={columns}>
-                    {wordsToShow.map((word) => <div key={word}>{word}</div>)}
+            <Paper
+                w={"100%"}
+                p={"sm"}
+                shadow={"xs"}
+                withBorder>
+                <Text component={"h2"} size={"lg"}
+                      fw={600}>
+                    {buildResultCountStr(lastResult.size, resultCap)}</Text>
+                <Divider/>
+                <SimpleGrid cols={columns} mt={"xs"}>
+                    {wordsToShow.map((word) => <Text key={word}>{word}</Text>)}
                 </SimpleGrid>
             </Paper>
         </main>
