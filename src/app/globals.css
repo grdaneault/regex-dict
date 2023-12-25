@@ -1,4 +1,4 @@
-@tailwind base;
+/*@tailwind base; -- base messes with the rest of the mantine components */
 @tailwind components;
 @tailwind utilities;
 
