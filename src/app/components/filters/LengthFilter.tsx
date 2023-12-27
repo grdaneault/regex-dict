@@ -1,10 +1,10 @@
 import type {FC} from 'react'
 import React, {memo, useState} from 'react'
-import {Button, Group, NumberInput} from '@mantine/core';
+import {Group, NumberInput, Switch} from '@mantine/core';
 import {FilterProps} from "@/app/components/filters/FilterProps";
-import {IconArrowsMaximize, IconArrowsMinimize} from "@tabler/icons-react";
 
 
+const MIN_WORD_LENGTH = 0; // for consistency :)
 const MAX_WORD_LENGTH = 23
 
 
@@ -34,10 +34,11 @@ export const LengthFilter: FC<FilterProps> = memo(function LengthInput({setFilte
         }
     }
 
-
     const handleChangedMinLength = (newMinLength: number) => {
         newMinLength = newMinLength < 0 ? 0 : newMinLength;
-        setFilter(makeLengthFilter(newMinLength, maxLength));
+        const newMaxLength = isRange ? maxLength : newMinLength;
+        setMaxLength(newMaxLength);
+        setFilter(makeLengthFilter(newMinLength, newMaxLength));
         setMinLength(newMinLength);
     }
 
@@ -46,66 +47,51 @@ export const LengthFilter: FC<FilterProps> = memo(function LengthInput({setFilte
         setMaxLength(newMaxLength);
     }
 
-    const handleChangedExactLength = (newLength: number) => {
-        setFilter(makeLengthFilter(newLength, newLength));
-        setMinLength(newLength);
-        setMaxLength(newLength);
+    const handleRangeModeChanged = (newRangeMode: boolean) => {
+        if (newRangeMode) {
+            setIsRange(true);
+            const maxLength = maxLengthInput !== "" ? parseInt(maxLengthInput) : MAX_WORD_LENGTH
+            setMaxLength(maxLength);
+            setFilter(makeLengthFilter(minLength, maxLength))
+        } else {
+            setIsRange(false);
+            if (minLengthInput === "") {
+                setMaxLength(MAX_WORD_LENGTH)
+                setMinLength(MIN_WORD_LENGTH)
+                setMaxLengthInput("");
+            } else {
+                setMaxLength(minLength)
+                setMaxLengthInput(minLength.toString())
+                setFilter(makeLengthFilter(minLength, minLength))
+            }
+
+        }
     }
 
-    const disableRangeMode = () => {
-        setIsRange(false);
-        setMaxLength(minLength);
-        setFilter(makeLengthFilter(minLength, minLength))
-    }
-
-    const enableRangeMode = () => {
-        setIsRange(true);
-        const maxLength = maxLengthInput !== "" ? parseInt(maxLengthInput) : MAX_WORD_LENGTH
-        setMaxLength(maxLength);
-        setFilter(makeLengthFilter(minLength, maxLength))
-    }
-
-    if (isRange) {
-        return (
-            <>
-                <Group>
-                    <NumberInput
-                        description={"Mininum Length"}
-                        value={minLengthInput}
-                        placeholder={minLength.toString()}
-                        min={1}
-                        max={MAX_WORD_LENGTH}
-                        onChange={handleValueChanged(handleChangedMinLength, 1, setMinLengthInput)}/>
-                    <NumberInput
-                        description={"Maximum Length"}
-                        value={maxLengthInput}
-                        placeholder={maxLength.toString()}
-                        min={1}
-                        max={MAX_WORD_LENGTH}
-                        onChange={handleValueChanged(handleChangedMaxLength, MAX_WORD_LENGTH, setMaxLengthInput)}/>
-                    <Button onClick={disableRangeMode}
-                            leftSection={<IconArrowsMinimize/>}
-                            className={"self-end"}>Hide Range</Button>
-                </Group>
-            </>
-        )
-    } else {
-        return (
-            <>
-                <Group>
-                    <NumberInput
-                        description={"Length"}
-                        value={minLengthInput}
-                        placeholder={minLength.toString()}
-                        min={1}
-                        max={MAX_WORD_LENGTH}
-                        onChange={handleValueChanged(handleChangedExactLength, 1, setMinLengthInput)}/>
-                    <Button onClick={enableRangeMode}
-                            leftSection={<IconArrowsMaximize/>}
-                            className={"self-end"}
-                    >Show Range</Button>
-                </Group>
-            </>
-        )
-    }
+    return (
+        <>
+            <Group>
+                <NumberInput
+                    description={"Mininum Length"}
+                    value={minLengthInput}
+                    placeholder={minLength.toString()}
+                    min={1}
+                    max={MAX_WORD_LENGTH}
+                    onChange={handleValueChanged(handleChangedMinLength, 1, setMinLengthInput)}/>
+                <NumberInput
+                    disabled={!isRange}
+                    description={"Maximum Length"}
+                    value={maxLengthInput}
+                    placeholder={maxLength.toString()}
+                    min={1}
+                    max={MAX_WORD_LENGTH}
+                    onChange={handleValueChanged(handleChangedMaxLength, MAX_WORD_LENGTH, setMaxLengthInput)}/>
+                <Switch checked={isRange}
+                        label={"Use range"}
+                        onChange={(event) => handleRangeModeChanged(event.currentTarget.checked)}
+                        className={"self-end"}
+                />
+            </Group>
+        </>
+    )
 })

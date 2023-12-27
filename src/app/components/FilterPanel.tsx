@@ -2,9 +2,10 @@ import {FC} from 'react'
 import {List} from "immutable";
 import {FilterFunc, FilterState, FilterType} from "@/app/data/model";
 import {FilterContainer} from "@/app/components/FilterContainer";
-import {Button} from "@mantine/core";
+import {Button, MantineSize} from "@mantine/core";
 import {IconPlus} from "@tabler/icons-react";
 import {DragDropContext, Droppable, OnDragEndResponder} from "@hello-pangea/dnd";
+import {useMediaQuery} from "@mantine/hooks";
 
 export interface FilterPanelProps {
     filterList: List<FilterState>
@@ -23,6 +24,8 @@ export const FilterPanel: FC<FilterPanelProps> = function RegexContainer({
                                                                          }) {
 
     const isLastFilter = filterList.size === 1;
+    const isLargeScreen = useMediaQuery('(min-width: 640px)')
+    const addButtonSize: MantineSize = isLargeScreen ? "sm" : "xs"
 
     const onDragEnd: OnDragEndResponder = (result) => {
         if (!result.destination) {
@@ -66,7 +69,7 @@ export const FilterPanel: FC<FilterPanelProps> = function RegexContainer({
                 </Droppable>
                 <Button
                     onClick={addFilter}
-                    size={"md"}
+                    size={addButtonSize}
                     rightSection={<IconPlus size={14}/>}>Add Filter</Button>
             </DragDropContext>
         </div>
