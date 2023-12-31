@@ -1,9 +1,20 @@
 'use client';
 
-import {createTheme, CSSVariablesResolver} from '@mantine/core';
+import {Button, createTheme, CSSVariablesResolver} from '@mantine/core';
 
 export const theme = createTheme({
-    /* Put your mantine theme override here */
+    primaryColor: 'lime',
+    primaryShade: {
+        light: 8,
+        dark: 7
+    },
+    components: {
+        Button: Button.extend({
+            defaultProps: {
+                variant: 'outline'
+            }
+        })
+    }
 });
 
 export const resolver: CSSVariablesResolver = (theme) => ({
