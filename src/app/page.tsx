@@ -5,7 +5,8 @@ import {List} from 'immutable';
 import React, {useState} from "react";
 import {FilterPanel} from "@/app/components/FilterPanel";
 import {DEFAULT_FILTER, FilterFunc, FilterState, FilterType} from "@/app/data/model";
-import {Divider, Paper, SimpleGrid, StyleProp, Text} from "@mantine/core";
+import {Button, Divider, Paper, SimpleGrid, StyleProp, Text} from "@mantine/core";
+import {IconPlus} from "@tabler/icons-react";
 
 
 const filterWords = (filter: FilterFunc, wordList: List<string> | undefined): List<string> => {
@@ -111,14 +112,23 @@ export default function Home() {
     let columns: StyleProp<number> = longestLen >= 14 ? LEN_15_COLUMNS : longestLen >= 7 ? LEN_7_COLUMNS : LEN_1_COLUMNS;
 
     return (
-        <main className="flex min-h-screen flex-col items-center
-            p-1 w-full
-             xl:max-w-6xl
-             mx-auto
-             gap-2
-             ">
+        <main className="main">
             <FilterPanel filterList={filterList} setFilter={setFilter} moveFilter={reorderFilter}
-                         removeFilter={removeFilter} addFilter={addFilter}/>
+                         removeFilter={removeFilter}/>
+            <div className={"less-than-sm add-filter"}>
+                <Button
+                    onClick={addFilter}
+                    size={"xs"}
+
+                    rightSection={<IconPlus size={14}/>}>Add Filter</Button>
+            </div>
+            <div className={"sm-or-greater add-filter"}>
+                <Button
+                    onClick={addFilter}
+                    size={"sm"}
+
+                    rightSection={<IconPlus size={14}/>}>Add Filter</Button>
+            </div>
             <Paper
                 w={"100%"}
                 p={"sm"}

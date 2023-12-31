@@ -89,7 +89,7 @@ export const LengthFilter: FC<FilterProps> = memo(function LengthInput({setFilte
                 <Switch checked={isRange}
                         label={"Use range"}
                         onChange={(event) => handleRangeModeChanged(event.currentTarget.checked)}
-                        className={"self-end"}
+                        className={"filter-toggle-switch"}
                 />
             </Group>
         </>

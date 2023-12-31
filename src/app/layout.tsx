@@ -4,7 +4,7 @@ import type {Metadata} from 'next'
 import '@mantine/core/styles.css';
 import React from 'react';
 import {MantineProvider, ColorSchemeScript} from '@mantine/core';
-import {theme} from '@/theme';
+import {theme, resolver} from '@/theme';
 
 
 export const metadata: Metadata = {
@@ -24,7 +24,8 @@ export default function RootLayout({children}: { children: React.ReactNode }) {
             />
         </head>
         <body>
-        <MantineProvider theme={theme} defaultColorScheme={"auto"}>{children}</MantineProvider>
+        <MantineProvider theme={theme} defaultColorScheme={"auto"}
+                         cssVariablesResolver={resolver}>{children}</MantineProvider>
         </body>
         </html>
     )

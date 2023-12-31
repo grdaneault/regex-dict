@@ -2,14 +2,11 @@ import {FC} from 'react'
 import {List} from "immutable";
 import {FilterFunc, FilterState, FilterType} from "@/app/data/model";
 import {FilterContainer} from "@/app/components/FilterContainer";
-import {Button, MantineSize} from "@mantine/core";
-import {IconPlus} from "@tabler/icons-react";
 import {DragDropContext, Droppable, OnDragEndResponder} from "@hello-pangea/dnd";
-import {useMediaQuery} from "@mantine/hooks";
+import classes from './FilterPanel.module.css';
 
 export interface FilterPanelProps {
     filterList: List<FilterState>
-    addFilter: () => void
     moveFilter: (draggedId: number, id: number) => void
     setFilter: (id: number, updatedFilter: { type?: FilterType, func?: FilterFunc, enabled?: boolean }) => void
     removeFilter: (id: number) => void
@@ -17,15 +14,12 @@ export interface FilterPanelProps {
 
 export const FilterPanel: FC<FilterPanelProps> = function RegexContainer({
                                                                              filterList,
-                                                                             addFilter,
                                                                              moveFilter,
                                                                              setFilter,
                                                                              removeFilter
                                                                          }) {
 
     const isLastFilter = filterList.size === 1;
-    const isLargeScreen = useMediaQuery('(min-width: 640px)')
-    const addButtonSize: MantineSize = isLargeScreen ? "sm" : "xs"
 
     const onDragEnd: OnDragEndResponder = (result) => {
         if (!result.destination) {
@@ -39,7 +33,7 @@ export const FilterPanel: FC<FilterPanelProps> = function RegexContainer({
     };
 
     return (
-        <div className={"w-full"}>
+        <div className={classes.filterPanel}>
             <DragDropContext onDragEnd={onDragEnd}>
                 <Droppable droppableId={"filters"}>
                     {(provided) => (
@@ -67,10 +61,6 @@ export const FilterPanel: FC<FilterPanelProps> = function RegexContainer({
                         </div>
                     )}
                 </Droppable>
-                <Button
-                    onClick={addFilter}
-                    size={addButtonSize}
-                    rightSection={<IconPlus size={14}/>}>Add Filter</Button>
             </DragDropContext>
         </div>
     );

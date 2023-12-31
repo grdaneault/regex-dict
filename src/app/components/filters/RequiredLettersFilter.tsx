@@ -96,7 +96,7 @@ export const RequiredLettersFilter: FC<FilterProps> = memo(function RequiredLett
                 <Switch checked={charsetMode}
                         label={"Allow only these letters"}
                         onChange={(event) => handleCharsetModeChange(event.currentTarget.checked)}
-                        className={"self-end"}
+                        className={"filter-toggle-switch"}
                 />
             </Group>
         </>
