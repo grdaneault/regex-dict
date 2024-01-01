@@ -119,14 +119,14 @@ export default function Home() {
                 <Button
                     onClick={addFilter}
                     size={"xs"}
-
+                    variant={"filled"}
                     rightSection={<IconPlus size={14}/>}>Add Filter</Button>
             </div>
             <div className={"sm-or-greater add-filter"}>
                 <Button
                     onClick={addFilter}
                     size={"sm"}
-
+                    variant={"filled"}
                     rightSection={<IconPlus size={14}/>}>Add Filter</Button>
             </div>
             <Paper
